@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}Social Network{% endblock %}</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link href="{% static 'network/styles.css' %}" rel="stylesheet">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        </head>
+    <body>
+            <nav class="navbar navbar-expand-lg navbar-expand-md navbar-light bg-light">
+                        <ul class="navbar-nav mr-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" title="Home" href="{% url 'index' %}">All Posts</a>
+                            </li>
+                            {% if user.is_authenticated %}
+                                <li class="nav-item">
+                                    <a class="nav-link" title="Following" href="{% url 'following' username=user.username %}">Following</a>
+                                </li>
+                        </ul>
+                        <ul class="navbar-nav ml-auto">
+                                <li class="nav-item">
+                                    <a class="nav-link" title="My Profile" href="{% url 'profile' username=user.username %}">Profile</i></a>    
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" title="Log Out" href="{% url 'logout' %}">Logout</a>
+                                </li>      
+                            {% else %}
+                        </ul>
+                        <ul class="navbar-nav ml-auto">
+                                <li class="nav-item">
+                                    <a class="nav-link" title="Log In" href="{% url 'login' %}">Login</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" title="Register" href="{% url 'register' %}">Register</a>
+                                </li>
+                        </ul>
+                            {% endif %} 
+            </nav>
+        <div class="container">
+            <div class="body">
+                {% block body %}
+                {% endblock %}
+            </div>
+        </div>
+</html>

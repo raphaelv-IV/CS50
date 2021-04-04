@@ -1,0 +1,95 @@
+{% extends "network/layout.html" %}
+{% load static %}
+{% block body %}
+{% if user.is_authenticated %}
+<button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#create">Post 
+{{profileuser.username|title}}
+</button>
+  <div class="modal fade" id="create" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content new-post-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Post</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <form method=post action="{% url 'newpost' username=user.username %}">
+                {% csrf_token %}
+                <textarea rows="10" class="form-control" name="textarea"></textarea>
+                <br>
+                <div class="modal-footer">
+                    <button class="btn btn-dark save" type="submit" value="Create">Post</button>
+                </div>
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+{% for post in page_obj %}
+<div class="card border-secondary mb-3">
+    <h5 class="card-header"><a href="{% url 'profile' username=post.user %}">{{post.user|title}}</a></h5>
+    <div class="card-body text-secondary">
+      <h6 class="card-subtitle mb-2 text-muted">{{post.date}}</h6>
+      <p class="card-text">{{post.content}}</p>
+        {% if user.is_authenticated %}
+            {% if request.user == post.user %}
+            <button type="button" class="btn btn-primary edit" data-toggle="modal" data-target="#edit">Edit</button>
+            <button type="button" class="btn btn-primary delete" data-toggle="modal" data-target="#delete">Delete</button>
+            {% elif request.user in post.liked.all %}
+            <a class="likebutton" href="#" data-catid="{{ post.id }}" id="{{post.id}}" data-total="{{post.liked.all.count}}"  data-value="Unlike" value="submit">Unlike<span id="liked{{post.id}}">{{post.liked.all.count}}</span></a>
+            {% else %}
+            <a class="likebutton" href="#" data-catid="{{ post.id }}" id="{{post.id}}" data-total="{{post.liked.all.count}}"  data-value="Like" value="submit">Like<span id="liked{{post.id}}">{{post.liked.all.count}}</span></a>
+            {% endif %}
+        {% else %}
+            <p class="total-likes">Likes: {{post.liked.all.count}}</p>
+        {% endif %}
+    </div>
+</div>
+  <div class="modal fade" id="delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog" role="document">
+      <div class="modal-content new-post-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Delete</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure?</p>
+                <div class="modal-footer">
+                    <form method=post action="{% url 'delete' post_id=post.id %}">
+                        {% csrf_token %}
+                    <button class="btn btn-danger save" type="submit" value="Delete">Delete</button>
+                    </form>
+                </div>     
+        </div>
+      </div>
+    </div>
+  </div>
+<div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content new-post-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Edit</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <form method=post action="{% url 'edit' post_id=post.id %}">
+              {% csrf_token %}
+              <textarea rows="10" class="form-control" name="textarea">{{post.content}}</textarea>
+              <br>
+              <div class="modal-footer">
+                  <button class="btn btn-primary save" type="submit" value="Save">Edit</button>
+              </div>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+{% endblock %}
